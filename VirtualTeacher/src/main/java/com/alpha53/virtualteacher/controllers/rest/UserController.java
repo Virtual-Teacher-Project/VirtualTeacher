@@ -3,18 +3,16 @@ package com.alpha53.virtualteacher.controllers.rest;
 import com.alpha53.virtualteacher.exceptions.AuthorizationException;
 import com.alpha53.virtualteacher.exceptions.EntityDuplicateException;
 import com.alpha53.virtualteacher.exceptions.EntityNotFoundException;
-import com.alpha53.virtualteacher.services.contracts.StorageService;
+import com.alpha53.virtualteacher.services.contracts.UserService;
 import com.alpha53.virtualteacher.utilities.helpers.AuthenticationHelper;
 import com.alpha53.virtualteacher.models.User;
 import com.alpha53.virtualteacher.models.dtos.UserDto;
-import com.alpha53.virtualteacher.services.UserService;
 import com.alpha53.virtualteacher.utilities.mappers.dtoMappers.UserMapperHelper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -27,14 +25,12 @@ public class UserController {
     private final AuthenticationHelper authenticationHelper;
 
     private final UserMapperHelper userMapperHelper;
-    private final StorageService storageService;
 
     @Autowired
-    public UserController(UserService userService, AuthenticationHelper authenticationHelper, UserMapperHelper userMapperHelper, StorageService storageService) {
+    public UserController(UserService userService, AuthenticationHelper authenticationHelper, UserMapperHelper userMapperHelper) {
         this.userService = userService;
         this.authenticationHelper = authenticationHelper;
         this.userMapperHelper = userMapperHelper;
-        this.storageService = storageService;
     }
 
     @GetMapping
@@ -94,13 +90,5 @@ public class UserController {
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-    }
-
-    @PostMapping("/uploadPicture")
-    public String handleFileUpload(@RequestParam("file") MultipartFile file) {
-
-        storageService.store(file);
-
-        return "OK";
     }
 }
