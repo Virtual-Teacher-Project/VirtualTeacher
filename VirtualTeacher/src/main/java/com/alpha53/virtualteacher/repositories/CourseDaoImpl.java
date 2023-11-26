@@ -5,49 +5,39 @@ import com.alpha53.virtualteacher.models.*;
 import com.alpha53.virtualteacher.repositories.contracts.CourseDao;
 import com.alpha53.virtualteacher.utilities.mappers.CourseDescriptionMapper;
 import com.alpha53.virtualteacher.utilities.mappers.CourseMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcDaoSupport;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Repository
-public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements CourseDao {
-
-   // private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+public class CourseDaoImpl implements CourseDao {
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final CourseMapper courseMapper;
-
-   /* //TODO
-    private static final CourseMapper COURSE_MAPPER = new CourseMapper();*/
     private final CourseDescriptionMapper courseDescriptionMapper;
 
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
-    public CourseDaoImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate, DataSource dataSource, CourseMapper courseMapper, CourseDescriptionMapper courseDescriptionMapper) {
-        this.courseMapper = courseMapper;
-        this.courseDescriptionMapper = courseDescriptionMapper;
-        this.setDataSource(dataSource);
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-    }
-
-    /*//TODO remove Autowired annotations in Component classes
+    @Autowired
     public CourseDaoImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate, @Lazy CourseMapper courseMapper, CourseDescriptionMapper courseDescriptionMapper) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
 
        this.courseMapper = courseMapper;
         this.courseDescriptionMapper = courseDescriptionMapper;
-    }*/
+    }
 
     @Override
     public Course get(int id) {
 
         String sql = "SELECT courses.id,title,start_date,creator_id,email,first_name,last_name,profile_picture,is_published,passing_grade,topic,topic_id " +
-                     "FROM courses LEFT JOIN topics ON courses.topic_id = topics.id     " +
+                "FROM courses LEFT JOIN topics ON courses.topic_id = topics.id     " +
                 "  LEFT JOIN users ON courses.creator_id = users.id WHERE courses.id=:id      ";
 
 
@@ -125,6 +115,8 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
     }
 
     //TODO refactor keywords in the query with capital letter pattern to follow consistency of the code
+    // TODO: 26.11.23 we should consider combining this method with getCoursesByUser. Removing the throw statement here
+    //  and adding a .isEmpty check in the service will most likely do the job. Discuss with team.
     @Override
     public List<Course> getUsersEnrolledCourses(int userId) {
         String sql = "select  courses.id,title,start_date,creator_id,email,first_name,last_name,profile_picture,is_published,passing_grade, topic, topic_id from course_user "+
@@ -140,8 +132,7 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
         try {
             return namedParameterJdbcTemplate.query(sql, in, courseMapper);
         } catch (IncorrectResultSizeDataAccessException e) {
-           // throw new EntityNotFoundException();
-            return Collections.emptyList();
+            throw new EntityNotFoundException();
         }
     }
 
@@ -173,13 +164,14 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
 //
 //    }
     @Override
-    public List<Course> getCoursesByUser( int userId){
+    public List<Course> getCoursesByUser(int userId) {
         String sql = "SELECT courses.id, title, start_date, creator_id, email, first_name, last_name, profile_picture," +
                 " is_published, passing_grade, topic, topic_id " +
-                "FROM courses " +
+                "FROM course_user " +
+                "LEFT JOIN courses ON course_user.course_id = courses.id " +
                 "LEFT JOIN topics ON courses.topic_id = topics.id " +
                 "LEFT JOIN users ON courses.creator_id = users.id " +
-                "WHERE creator_id = :id;";
+                "WHERE user_id = :id;";
 
         MapSqlParameterSource in = new MapSqlParameterSource();
         in.addValue("id", userId);
@@ -192,7 +184,7 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
     public void create(Course course) {
 
         String sql = "INSERT INTO courses (title, topic_id, start_date,creator_id,is_published,passing_grade)" +
-                     "VALUES (:title,:topic_id,:start_date,:creator_id,:is_published,:passing_grade)         ";
+                "VALUES (:title,:topic_id,:start_date,:creator_id,:is_published,:passing_grade)         ";
         MapSqlParameterSource in = new MapSqlParameterSource();
         in.addValue("title", course.getTitle());
         in.addValue("topic_id", course.getTopic().getTopicId());
@@ -213,7 +205,7 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
 
         String sql = "UPDATE courses SET title= :title, topic_id= :topic_id, start_date= :start_date,creator_id= :creator_id, is_published= :is_published, passing_grade= :is_published where courses.id= :course_id";
 
-         MapSqlParameterSource in = new MapSqlParameterSource();
+        MapSqlParameterSource in = new MapSqlParameterSource();
         in.addValue("title", course.getTitle());
         in.addValue("topic_id", course.getTopic().getTopicId());
         in.addValue("start_date", course.getStartingDate());
@@ -253,13 +245,13 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
     }
 
     @Override
-    public void transferTeacherCourses(int teacherToTransferFromId, int teacherToTransferToId){
+    public void transferTeacherCourses(int teacherToTransferFromId, int teacherToTransferToId) {
         String sql = "UPDATE courses SET creator_id = :idNewTeacher WHERE creator_id = :idPreviousTeacher;";
 
-        MapSqlParameterSource in =  new MapSqlParameterSource();
+        MapSqlParameterSource in = new MapSqlParameterSource();
         in.addValue("idPreviousTeacher", teacherToTransferFromId);
         in.addValue("idNewTeacher", teacherToTransferToId);
-        namedParameterJdbcTemplate.update(sql,in);
+        namedParameterJdbcTemplate.update(sql, in);
     }
 
 
