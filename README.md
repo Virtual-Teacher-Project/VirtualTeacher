@@ -29,6 +29,7 @@ The following list of software should be installed on your computer:
 ### Database Replication
 - Run the following script under: `VirtualTeacher/src/main/resources/db/migration/Initialize_DB.sql` in the project
 - Database schema will be created and populated once the app is executed
+- Datasource url, username and password should be configured in the application.properties file both for database connectivity and flyway configuration.
 
 
 ### Login Details
