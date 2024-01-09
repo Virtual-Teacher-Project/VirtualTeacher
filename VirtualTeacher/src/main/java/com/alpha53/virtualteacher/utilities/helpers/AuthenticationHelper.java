@@ -23,31 +23,22 @@ public class AuthenticationHelper {
     }
 
     public User tryGetUser(HttpHeaders headers) {
-        if (!headers.containsKey(AUTHORIZATION_HEADER_NAME)) {
+        String userInfo = headers.getFirst(AUTHORIZATION_HEADER_NAME);
+        if (userInfo == null || userInfo.isBlank()) {
             throw new AuthorizationException(INVALID_AUTHENTICATION_ERROR);
         }
-
-        String userInfo = headers.getFirst(AUTHORIZATION_HEADER_NAME);
         String email = getEmail(userInfo);
         String password = getPassword(userInfo);
-
-        User user = verifyAuthentication(email, password);
-
-        return user;
+        return verifyAuthentication(email, password);
     }
 
 
     public User tryGetCurrentUser(HttpSession session) {
         String currentEmail = (String) session.getAttribute("currentUserEmail");
-//TODO Check if commented part is useless
-        /*if (currentEmail == null) {
-            throw new AuthorizationException(INVALID_AUTHENTICATION_ERROR);
-        }*/
-
         try {
-           User user = userService.get(currentEmail);
-           throwIfNotVerified(user);
-           return user;
+            User user = userService.get(currentEmail);
+            throwIfNotVerified(user);
+            return user;
         } catch (EntityNotFoundException e) {
             throw new AuthorizationException(INVALID_AUTHENTICATION_ERROR);
         }
@@ -77,7 +68,6 @@ public class AuthenticationHelper {
         if (firstSpace == -1) {
             throw new AuthorizationException(INVALID_AUTHENTICATION_ERROR);
         }
-
         return userInfo.substring(0, firstSpace);
     }
 
@@ -86,7 +76,6 @@ public class AuthenticationHelper {
         if (firstSpace == -1) {
             throw new AuthorizationException(INVALID_AUTHENTICATION_ERROR);
         }
-
         return userInfo.substring(firstSpace + 1);
     }
 

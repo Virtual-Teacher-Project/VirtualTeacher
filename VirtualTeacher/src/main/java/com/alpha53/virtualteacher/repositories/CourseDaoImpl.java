@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcDaoSupport;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-
 import javax.sql.DataSource;
 import java.util.*;
 
@@ -52,7 +51,6 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
                 " LEFT JOIN course_description on courses.id = course_description.course_id " +
                 " WHERE courses.id=:id      " +
                 "GROUP BY courses.id";
-
 
         MapSqlParameterSource in = new MapSqlParameterSource();
         in.addValue("id", id);
@@ -382,7 +380,7 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
         params.addValue("userId", userId);
         params.addValue("courseId", courseId);
 
-        return namedParameterJdbcTemplate.queryForObject(sql, params, Integer.class) > 0;
+        return !Objects.equals(namedParameterJdbcTemplate.queryForObject(sql, params, Integer.class),0);
     }
 
     @Override
@@ -451,7 +449,7 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
         MapSqlParameterSource param = new MapSqlParameterSource();
         param.addValue("course_id", courseId);
 
-        return namedParameterJdbcTemplate.queryForObject(sql, param, Integer.class) > 0;
+        return !Objects.equals(namedParameterJdbcTemplate.queryForObject(sql, param, Integer.class), 0);
     }
 
 

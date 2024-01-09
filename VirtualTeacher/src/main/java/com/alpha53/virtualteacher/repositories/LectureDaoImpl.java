@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -31,7 +32,7 @@ public class LectureDaoImpl extends NamedParameterJdbcDaoSupport implements Lect
      *
      * @param id - lecture ID
      * @return Lecture object
-     * @Throws EntityNotFoundException if lecture does not exist
+     * @Throw EntityNotFoundException if lecture does not exist
      */
     @Override
     public Lecture get(final int id) {
@@ -55,7 +56,7 @@ public class LectureDaoImpl extends NamedParameterJdbcDaoSupport implements Lect
      * @return list of Lectures
      */
     @Override
-    public List<Lecture> getAllByCourseId(int courseId) {
+    public List<Lecture> getAllByCourseId(final int courseId) {
         String sql =
                 "SELECT * FROM lectures                          " +
                         "LEFT JOIN lecture_description                   " +
@@ -134,7 +135,7 @@ public class LectureDaoImpl extends NamedParameterJdbcDaoSupport implements Lect
      * @return number of the affected rows, 0 if nothing deleted
      */
     @Override
-    public int delete(int lectureId) {
+    public int delete(final int lectureId) {
         String sql = "DELETE FROM lectures WHERE id =:lectureId";
         MapSqlParameterSource params = new MapSqlParameterSource("lectureId", lectureId);
         return namedParameterJdbcTemplate.update(sql, params);
@@ -148,7 +149,7 @@ public class LectureDaoImpl extends NamedParameterJdbcDaoSupport implements Lect
      */
 
     @Override
-    public Optional<String> getAssignmentUrl(int lectureId){
+    public Optional<String> getAssignmentUrl(final int lectureId){
         String sql = "SELECT assignment_url FROM lectures WHERE id=:lectureId";
         MapSqlParameterSource param = new MapSqlParameterSource();
         param.addValue("lectureId",lectureId);
@@ -160,12 +161,11 @@ public class LectureDaoImpl extends NamedParameterJdbcDaoSupport implements Lect
     }
 
     @Override
-    public boolean isAssignmentExist(int lectureId) {
+    public boolean isAssignmentExist(final int lectureId) {
         String sql = "SELECT COUNT(*) FROM lectures WHERE id =:lectureId";
         MapSqlParameterSource param = new MapSqlParameterSource();
         param.addValue("lectureId", lectureId);
-        Integer result = namedParameterJdbcTemplate.queryForObject(sql, param, Integer.class);
-        return result!=null && result>0;
+        return !Objects.equals(namedParameterJdbcTemplate.queryForObject(sql, param, Integer.class),0);
     }
 
     /**
@@ -174,13 +174,13 @@ public class LectureDaoImpl extends NamedParameterJdbcDaoSupport implements Lect
      * @param lectureId - ID of a lecture
      * @return true if description exist, otherwise false
      */
-    private boolean isDescriptionExist(int lectureId) {
+    private boolean isDescriptionExist(final int lectureId) {
         String sql =
                 "SELECT COUNT(*) FROM lecture_description WHERE lecture_id = :lectureId";
         MapSqlParameterSource param = new MapSqlParameterSource();
         param.addValue("lectureId", lectureId);
-        Integer result = namedParameterJdbcTemplate.queryForObject(sql, param, Integer.class);
-        return result!=null && result>0;
+        return !Objects.equals(namedParameterJdbcTemplate.queryForObject(sql, param, Integer.class),0);
+
     }
 
     /**
