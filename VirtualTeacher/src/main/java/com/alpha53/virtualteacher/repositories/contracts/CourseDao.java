@@ -44,7 +44,7 @@ public interface CourseDao {
 
     List<Integer> getIdOngoingCourses();
 
-    Integer getCoursesCount();
+    Integer getPublishedCoursesCount();
 
     List<Rating> getRatingsByCourseId(int courseId);
 }

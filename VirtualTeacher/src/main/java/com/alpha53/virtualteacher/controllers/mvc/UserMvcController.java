@@ -184,9 +184,12 @@ public class UserMvcController {
             return "redirect:/auth/login";
         } catch (AuthorizationException e) {
             // TODO: 13.12.23 we can just add a specific exception statement later on.
-            if (e.getMessage().contains("transfer") && user.getRole().getRoleType().equalsIgnoreCase("Admin")) {
-                model.addAttribute("errorMessage", e.getMessage());
-                return "transfer-course";
+            if (e.getMessage().contains("transfer")) {
+                assert user != null;
+                if (user.getRole().getRoleType().equalsIgnoreCase("Admin")) {
+                    model.addAttribute("errorMessage", e.getMessage());
+                    return "transfer-course";
+                }
             }
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("statusCode", 401);

@@ -203,7 +203,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     public Integer getCoursesCount(){
-     return courseRepository.getCoursesCount();
+     return courseRepository.getPublishedCoursesCount();
     }
 
     @Override

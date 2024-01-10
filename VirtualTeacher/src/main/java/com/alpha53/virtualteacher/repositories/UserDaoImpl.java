@@ -106,7 +106,8 @@ public class UserDaoImpl extends NamedParameterJdbcDaoSupport implements UserDao
     }
 
     private String generateOrderBy(FilterOptionsUsers filterOptionsUsers) {
-        if (filterOptionsUsers.getSortBy().isEmpty() || (filterOptionsUsers.getSortBy().isPresent() && filterOptionsUsers.getSortBy().get().isEmpty())) {
+        if (filterOptionsUsers.getSortBy().isEmpty() || (filterOptionsUsers.getSortBy().isPresent()
+                && filterOptionsUsers.getSortBy().get().isEmpty())) {
             return "";
         }
 

@@ -17,46 +17,33 @@ import java.util.*;
 @Repository
 public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements CourseDao {
 
-
-    private final CourseMapper courseMapper;
-
-    /* //TODO
-     private static final CourseMapper COURSE_MAPPER = new CourseMapper();*/
-
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private final UserMapper userMapper = new UserMapper();
-    private final RatingMapper ratingMapper = new RatingMapper();
+    private final UserMapper USER_MAPPER = new UserMapper();
+    private static final CourseMapper COURSE_MAPPER = new CourseMapper();
+    private final RatingMapper RATING_MAPPER = new RatingMapper();
 
-    public CourseDaoImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate, DataSource dataSource, CourseMapper courseMapper) {
-        this.courseMapper = courseMapper;
+    public CourseDaoImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate, DataSource dataSource) {
         this.setDataSource(dataSource);
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    /*//TODO remove Autowired annotations in Component classes
-    public CourseDaoImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate, @Lazy CourseMapper courseMapper, CourseDescriptionMapper courseDescriptionMapper) {
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-
-       this.courseMapper = courseMapper;
-        this.courseDescriptionMapper = courseDescriptionMapper;
-    }*/
-
     @Override
     public Course get(int id) {
 
-        String sql = "SELECT description, courses.id,title,start_date,creator_id,email,first_name,last_name,picture_url, is_verified,is_published,passing_grade,topic,topic_id, AVG(ratings.rating) AS avg_rating " +
-                "FROM courses LEFT JOIN topics ON courses.topic_id = topics.id     " +
-                "  LEFT JOIN users ON courses.creator_id = users.id " +
-                "   LEFT JOIN ratings ON courses.id = ratings.course_id " +
-                " LEFT JOIN course_description on courses.id = course_description.course_id " +
-                " WHERE courses.id=:id      " +
+        String sql = "SELECT description, courses.id,title,start_date,creator_id,email,first_name,last_name,picture_url, " +
+                "is_verified,is_published,passing_grade,topic,topic_id, AVG(ratings.rating) AS avg_rating " +
+                "FROM courses LEFT JOIN topics ON courses.topic_id = topics.id " +
+                "LEFT JOIN users ON courses.creator_id = users.id " +
+                "LEFT JOIN ratings ON courses.id = ratings.course_id " +
+                "LEFT JOIN course_description on courses.id = course_description.course_id " +
+                "WHERE courses.id=:id " +
                 "GROUP BY courses.id";
 
         MapSqlParameterSource in = new MapSqlParameterSource();
         in.addValue("id", id);
 
         try {
-            return namedParameterJdbcTemplate.queryForObject(sql, in, courseMapper);
+            return namedParameterJdbcTemplate.queryForObject(sql, in, COURSE_MAPPER);
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new EntityNotFoundException("Course", "id", String.valueOf(id));
         }
@@ -65,12 +52,13 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
 
     @Override
     public Course getByTitle(String title) {
-        String sql = "SELECT description, courses.id,title,start_date,creator_id,email,first_name,last_name,picture_url,is_verified,is_published,passing_grade,topic,topic_id, AVG(ratings.rating) AS avg_rating " +
-                "FROM courses LEFT JOIN topics ON courses.topic_id = topics.id     " +
-                "  LEFT JOIN users ON courses.creator_id = users.id " +
-                "   LEFT JOIN ratings ON courses.id = ratings.course_id " +
-                " LEFT JOIN course_description on courses.id = course_description.course_id " +
-                " WHERE courses.title=:title      " +
+        String sql = "SELECT description, courses.id,title,start_date,creator_id,email,first_name,last_name,picture_url, " +
+                "is_verified,is_published,passing_grade,topic,topic_id, AVG(ratings.rating) AS avg_rating " +
+                "FROM courses LEFT JOIN topics ON courses.topic_id = topics.id " +
+                "LEFT JOIN users ON courses.creator_id = users.id " +
+                "LEFT JOIN ratings ON courses.id = ratings.course_id " +
+                "LEFT JOIN course_description on courses.id = course_description.course_id " +
+                "WHERE courses.title=:title      " +
                 "GROUP BY courses.id";
 
 
@@ -78,7 +66,7 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
         in.addValue("title", title);
 
         try {
-            return namedParameterJdbcTemplate.queryForObject(sql, in, courseMapper);
+            return namedParameterJdbcTemplate.queryForObject(sql, in, COURSE_MAPPER);
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new EntityNotFoundException();
         }
@@ -86,29 +74,31 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
 
     @Override
     public List<Course> get(FilterOptions filterOptions) {
-        String sql = "SELECT description, courses.id,title,start_date,creator_id,email,first_name,last_name,picture_url, is_verified,is_published,passing_grade,topic,topic_id, AVG(ratings.rating) AS avg_rating " +
+        StringBuilder queryString = new StringBuilder("SELECT description, courses.id,title,start_date,creator_id,email, " +
+                "first_name,last_name,picture_url, " +
+                "is_verified,is_published,passing_grade,topic,topic_id, AVG(ratings.rating) AS avg_rating " +
                 "FROM courses " +
-                " LEFT JOIN topics ON courses.topic_id = topics.id     " +
-                "  LEFT JOIN users ON courses.creator_id = users.id " +
-                "   LEFT JOIN ratings ON courses.id = ratings.course_id " +
-                " LEFT JOIN course_description on courses.id = course_description.course_id ";
+                "LEFT JOIN topics ON courses.topic_id = topics.id " +
+                "LEFT JOIN users ON courses.creator_id = users.id " +
+                "LEFT JOIN ratings ON courses.id = ratings.course_id " +
+                "LEFT JOIN course_description on courses.id = course_description.course_id ");
 
 
         List<String> filters = new ArrayList<>();
-        MapSqlParameterSource in = new MapSqlParameterSource();
+        MapSqlParameterSource params = new MapSqlParameterSource();
 
         if (filterOptions.getTitle().isPresent() && !filterOptions.getTitle().get().isEmpty()) {
             filters.add("title like :title ");
-            in.addValue("title", String.format("%%%s%%", filterOptions.getTitle().get()));
+            params.addValue("title", String.format("%%%s%%", filterOptions.getTitle().get()));
         }
 
         if (filterOptions.getTopic().isPresent() && !filterOptions.getTopic().get().isEmpty()) {
             filters.add("topic like :topic ");
-            in.addValue("topic", String.format("%%%s%%", filterOptions.getTopic().get()));
+            params.addValue("topic", String.format("%%%s%%", filterOptions.getTopic().get()));
         }
         if (filterOptions.getTeacher().isPresent() && !filterOptions.getTeacher().get().isEmpty()) {
             filters.add("email like :teacher ");
-            in.addValue("teacher", String.format("%%%s%%", filterOptions.getTeacher().get()));
+            params.addValue("teacher", String.format("%%%s%%", filterOptions.getTeacher().get()));
         }
 
         filterOptions.getIsPublic().ifPresent(value -> {
@@ -120,24 +110,45 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
         });
 
         if (!filters.isEmpty()) {
-            sql += " WHERE ";
-            sql += String.join(" and ", filters);
+            queryString.append(" where ").append(String.join(" and ", filters));
         }
-        sql += " GROUP BY courses.id ";
+        queryString.append(" GROUP BY courses.id ");
+
         if (filterOptions.getRating().isPresent()) {
-            if (filterOptions.getRating().get()==0){
+            queryString.append(String.format(" HAVING AVG(ratings.rating) >= %f ", filterOptions.getRating().get()));
 
-                sql += String.format(" HAVING  AVG(ratings.rating) >= %f OR avg_rating IS NULL", filterOptions.getRating().get());
-            }else{
-                sql += String.format(" HAVING  AVG(ratings.rating) >= %f ", filterOptions.getRating().get());
+            if (filterOptions.getRating().get() == 0) {
+                queryString.append(" OR avg_rating IS NULL");
             }
+//                sql += String.format(" HAVING AVG(ratings.rating) >= %f OR avg_rating IS NULL", filterOptions.getRating().get());
+//            } else {
+//                sql += String.format(" HAVING AVG(ratings.rating) >= %f ", filterOptions.getRating().get());
+//            }
         }
 
-        sql += generateOrderBy(filterOptions);
+        queryString.append(generateOrderBy(filterOptions));
 
-        return namedParameterJdbcTemplate.query(sql, in, courseMapper);
+        return namedParameterJdbcTemplate.query(queryString.toString(), params, COURSE_MAPPER);
+    }
 
+    private String generateOrderBy(FilterOptions filterOptions) {
+        if (filterOptions.getSortBy().isEmpty() || filterOptions.getSortBy().get().isEmpty()) {
+            return "";
+        }
 
+        String orderBy = switch (filterOptions.getSortBy().get()) {
+            case "title" -> "title";
+            case "rating" -> "avg_rating";
+            default -> "";
+        };
+
+        orderBy = String.format(" order by %s", orderBy);
+
+        if (filterOptions.getSortOrder().isPresent() && filterOptions.getSortOrder().get().equalsIgnoreCase("desc")) {
+            orderBy = String.format("%s desc", orderBy);
+        }
+
+        return orderBy;
     }
 
     //TODO refactor keywords in the query with capital letter pattern to follow consistency of the code
@@ -170,42 +181,38 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
 
     @Override
     public List<Course> getUsersCompletedCourses(int userId) {
-        String sql = "SELECT  description, courses.id,title,start_date,creator_id,email,first_name,last_name,picture_url,is_verified,is_published,passing_grade, topic, topic_id, AVG(ratings.rating) AS avg_rating " +
-                " FROM course_user " +
-                " LEFT JOIN courses ON course_user.course_id = courses.id " +
-                " LEFT JOIN users ON course_user.user_id = users.id " +
-                " LEFT JOIN topics ON courses.topic_id=topics.id " +
-                " LEFT JOIN ratings ON courses.id = ratings.course_id " +
-                " LEFT JOIN course_description on courses.id = course_description.course_id " +
-                " WHERE course_user.user_id = :id AND course_user.ongoing = 0 " +
+        String sql = "SELECT description, courses.id,title,start_date,creator_id,email,first_name,last_name,picture_url, " +
+                "is_verified,is_published,passing_grade, topic, topic_id, AVG(ratings.rating) AS avg_rating " +
+                "FROM course_user " +
+                "LEFT JOIN courses ON course_user.course_id = courses.id " +
+                "LEFT JOIN users ON course_user.user_id = users.id " +
+                "LEFT JOIN topics ON courses.topic_id=topics.id " +
+                "LEFT JOIN ratings ON courses.id = ratings.course_id " +
+                "LEFT JOIN course_description on courses.id = course_description.course_id " +
+                "WHERE course_user.user_id = :id AND course_user.ongoing = 0 " +
                 "GROUP BY courses.id";
 
 
         MapSqlParameterSource in = new MapSqlParameterSource();
         in.addValue("id", userId);
 
-        return namedParameterJdbcTemplate.query(sql, in, courseMapper);
+        return namedParameterJdbcTemplate.query(sql, in, COURSE_MAPPER);
 
     }
 
     @Override
     public List<User> getStudentsWhichAreEnrolledForCourse(int courseId) {
-        String sql = "SELECT users.id AS userId, email, password, first_name, last_name, picture_url, is_verified, role_id, role " +
+        String sql = "SELECT users.id AS userId, email, password, first_name, last_name, picture_url, is_verified, " +
+                "role_id, role " +
                 "FROM course_user " +
                 "LEFT JOIN users ON course_user.user_id = users.id " +
                 "LEFT JOIN roles r ON r.id = users.role_id " +
                 "WHERE course_id=:id";
 
-
         MapSqlParameterSource in = new MapSqlParameterSource();
         in.addValue("id", courseId);
 
-        try {
-            return namedParameterJdbcTemplate.query(sql, in, userMapper);
-        } catch (IncorrectResultSizeDataAccessException e) {
-            // throw new EntityNotFoundException();
-            return Collections.emptyList();
-        }
+        return namedParameterJdbcTemplate.query(sql, in, USER_MAPPER);
     }
 
     @Override
@@ -222,8 +229,8 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
     @Override
     public void completeCourse(int userId, int courseId) {
         String sql = "UPDATE course_user " +
-                "SET ongoing = 0 " +
-                "WHERE course_id = :course_id AND user_id = :user_id ";
+                     "SET ongoing = 0 " +
+                     "WHERE course_id = :course_id AND user_id = :user_id ";
         MapSqlParameterSource in = new MapSqlParameterSource();
         in.addValue("course_id", courseId);
         in.addValue("user_id", userId);
@@ -248,7 +255,7 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
         MapSqlParameterSource in = new MapSqlParameterSource();
         in.addValue("id", userId);
 
-        return namedParameterJdbcTemplate.query(sql, in, courseMapper);
+        return namedParameterJdbcTemplate.query(sql, in, COURSE_MAPPER);
 
     }
 
@@ -267,7 +274,7 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
         MapSqlParameterSource in = new MapSqlParameterSource();
         in.addValue("id", creatorId);
 
-        return namedParameterJdbcTemplate.query(sql, in, courseMapper);
+        return namedParameterJdbcTemplate.query(sql, in, COURSE_MAPPER);
 
     }
 
@@ -283,7 +290,7 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
         in.addValue("creator_id", course.getCreator().getUserId());
         in.addValue("is_published", course.isPublished());
         in.addValue("passing_grade", course.getPassingGrade());
-        int executeResult = namedParameterJdbcTemplate.update(sql, in);
+        namedParameterJdbcTemplate.update(sql, in);
 
         if (course.getDescription() != null) {
             addDescription(course, in);
@@ -309,6 +316,7 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
         }
 
         if (isDescriptionExist(course.getCourseId())) {
+            // TODO: 9.01.24 test if empty description (one or more intervals deletes the description /most likely not/) 
             if (course.getDescription() == null) {
                 deleteDescription(in);
             } else {
@@ -402,11 +410,12 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
     }
 
     @Override
-    public Integer getCoursesCount() {
+    public Integer getPublishedCoursesCount() {
         String sql = "SELECT COUNT(*) FROM courses WHERE is_published = 1";
         return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, new MapSqlParameterSource(), Integer.class)).orElse(0);
     }
 
+    // TODO: 9.01.24 Consider moving this in a separate dao.
     @Override
     public List<Rating> getRatingsByCourseId(int courseId) {
         String sql = "SELECT rating, comment, user_id, course_id, email, first_name, last_name, picture_url " +
@@ -417,34 +426,13 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
         MapSqlParameterSource in = new MapSqlParameterSource();
         in.addValue("id", courseId);
 
-        return namedParameterJdbcTemplate.query(sql, in, ratingMapper);
-    }
-
-    private String generateOrderBy(FilterOptions filterOptions) {
-        if (filterOptions.getSortBy().isEmpty() || filterOptions.getSortBy().get().isEmpty()) {
-            return "";
-        }
-
-        String orderBy = switch (filterOptions.getSortBy().get()) {
-            case "title" -> "title";
-            case "rating" -> "avg_rating";
-            default -> "";
-        };
-
-        orderBy = String.format(" order by %s", orderBy);
-
-        if (filterOptions.getSortOrder().isPresent() && filterOptions.getSortOrder().get().equalsIgnoreCase("desc")) {
-            orderBy = String.format("%s desc", orderBy);
-        }
-
-        return orderBy;
+        return namedParameterJdbcTemplate.query(sql, in, RATING_MAPPER);
     }
 
 
     private boolean isDescriptionExist(int courseId) {
 
-        String sql =
-                "SELECT COUNT(*) FROM course_description WHERE course_id = :course_id";
+        String sql = "SELECT COUNT(*) FROM course_description WHERE course_id = :course_id";
 
         MapSqlParameterSource param = new MapSqlParameterSource();
         param.addValue("course_id", courseId);
@@ -453,8 +441,10 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
     }
 
 
+    // TODO: 9.01.24 consider removing MapSqlParameterSource param as a function parameter.
     private void addDescription(Course course, MapSqlParameterSource param) {
 
+        // TODO: 9.01.24 remove this from here and add it to the update method.
         if (course.getCourseId() == null) {
             String courseIdSql = "SELECT id FROM courses WHERE title =:title";
             course.setCourseId(namedParameterJdbcTemplate.queryForObject(courseIdSql, param, Integer.class));
