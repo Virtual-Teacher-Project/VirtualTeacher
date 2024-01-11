@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>About Us 01 - Online Courses & Education Bootstrap5 Template</title>
-    <meta name="robots" content="noindex, follow" />
+    <meta name="robots" content="noindex, follow"/>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -35,6 +35,18 @@
           th:href="@{/css/plugins/magnigy-popup.min.css}">
     <link rel="stylesheet" href="../static/css/plugins/plyr.css" th:href="@{/css/plugins/plyr.css}">
     <link rel="stylesheet" href="../static/css/style.css" th:href="@{/css/style.css}">
+    <style>
+        .row {
+            --bs-gutter-x: 10rem;
+            --bs-gutter-y: 0;
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: calc(var(--bs-gutter-y) * -1);
+            margin-right: calc(var(--bs-gutter-x) * -.5);
+            margin-left: calc(var(--bs-gutter-x) * -.5)
+        }
+    </style>
+
 </head>
 <header class="rbt-header rbt-header-10">
     <div class="rbt-header-wrapper header-space-betwween header-sticky">
@@ -44,24 +56,23 @@
 <body class="rbt-header-sticky">
 
 
-
 <!-- Start Banner Area  -->
 <div class="slider-area rbt-banner-10 height-750 bg_image bg_image--11" data-black-overlay="5">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
                 <div class="inner text-center">
-                    
+
                     <h1 class="title display-one text-white">Take Challenge for Build Your Life. <br>The World Most
                         Lessons for Back to Your Life.</h1>
                     <div class="read-more-btn mt--40">
-                        <a class="rbt-btn btn-gradient hover-icon-reverse" th:href="@{/contacts}">
-                                <span class="icon-reverse-wrapper">
-                                    <span class="btn-text">Contact Us</span>
-                                <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                </span>
-                        </a>
+                        <!-- <a class="rbt-btn btn-gradient hover-icon-reverse" th:href="@{/contacts}">
+                                 <span class="icon-reverse-wrapper">
+                                     <span class="btn-text">Contact Us</span>
+                                 <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                                 <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                                 </span>
+                         </a>-->
                     </div>
                 </div>
             </div>
@@ -81,7 +92,9 @@
 
                         <h2 class="title">Know About Us</h2>
                     </div>
-                    <p class="description mt--30">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+                    <p class="description mt--30">Far far away, behind the word mountains, far from the countries
+                        Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right
+                        at the coast of the Semantics, a large language ocean.</p>
                     <!-- Start Feature List  -->
                     <div class="rbt-feature-wrapper mt--40">
 
@@ -102,7 +115,8 @@
                             </div>
                             <div class="feature-content">
                                 <h6 class="feature-title">Learn From Anywhere</h6>
-                                <p class="feature-description">Sed distinctio repudiandae eos recusandae laborum eaque non eius iure suscipit laborum eaque non eius iure suscipit.</p>
+                                <p class="feature-description">Sed distinctio repudiandae eos recusandae laborum eaque
+                                    non eius iure suscipit laborum eaque non eius iure suscipit.</p>
                             </div>
                         </div>
 
@@ -112,7 +126,8 @@
                             </div>
                             <div class="feature-content">
                                 <h6 class="feature-title">Experienced Teacher's service.</h6>
-                                <p class="feature-description">Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia, aliquid mollitia Officia, aliquid mollitia.</p>
+                                <p class="feature-description">Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                                    Officia, aliquid mollitia Officia, aliquid mollitia.</p>
                             </div>
                         </div>
                     </div>
@@ -168,93 +183,77 @@
 </div>
 <!-- End Button Area  -->
 
+    <div class="row g-5">
+        <div class="col-lg-12 mb--60">
+            <div class="section-title text-center">
 
-
-<div class="rbt-team-area bg-color-white rbt-section-gapBottom">
-    <div class="container">
-        <div class="row g-5">
-            <div class="col-lg-12 mb--60">
-                <div class="section-title text-center">
-
-                    <h2 class="title">Our Team</h2>
-                   </div>
+                <h2 class="title">Authors</h2>
             </div>
-        </div>
-
-        <div class="row g-5">
-
-            <!-- Start Single Team  -->
-            <div class="col-lg-4 col-md-6 col-12">
-                <div class="rbt-team team-style-default style-three rbt-hover">
-                    <div class="inner">
-                        <div class="thumbnail"><img src="../static/assets/images/borislav.jpg" th:src="@{/assets/images/borislav.jpg}" alt="Corporate Template">
-                        </div>
-                        <div class="content">
-                            <h2 class="title">Borislav Chavdarov</h2>
-                            <h6 class="subtitle theme-gradient">Developer</h6>
-                            <span class="team-form">
-                                    <i class="feather-map-pin"></i>
-                                    <span class="location">Sofia, Bulgaria</span>
-                                </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End Single Team  -->
-
-            <!-- Start Single Team  -->
-            <div class="col-lg-4 col-md-6 col-12">
-                <div class="rbt-team team-style-default style-three rbt-hover">
-                    <div class="inner">
-                        <div class="thumbnail"><img src="../static/assets/images/team/team-08.jpg" alt="Corporate Template">
-                        </div>
-                        <div class="content">
-                            <h2 class="title">John Due</h2>
-                            <h6 class="subtitle theme-gradient">Depertment Head</h6>
-                            <span class="team-form">
-                                    <i class="feather-map-pin"></i>
-                                    <span class="location">CO Miego, AD,USA</span>
-                                </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End Single Team  -->
-
-            <!-- Start Single Team  -->
-            <div class="col-lg-4 col-md-6 col-12">
-                <div class="rbt-team team-style-default style-three rbt-hover">
-                    <div class="inner">
-                        <div class="thumbnail"><img src="../static/assets/images/team/team-09.jpg" alt="Corporate Template">
-                        </div>
-                        <div class="content">
-                            <h2 class="title">Joo Bieden</h2>
-                            <h6 class="subtitle theme-gradient">Math Teacher</h6>
-                            <span class="team-form">
-                                    <i class="feather-map-pin"></i>
-                                    <span class="location">CO Miego, AD,USA</span>
-                                </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End Single Team  -->
-
         </div>
     </div>
-</div>
 
+<div class="col-md-9 offset-lg-3 col-md-8 ">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="rbt-team team-style-default style-three rbt-hover">
+                <div class="inner">
+                    <div class="thumbnail"><img src="../static/assets/images/authors/atanas_picture.png"
+                                                th:src="@{/assets/images/authors/atanas_picture.png}"
+                                                alt="Corporate Template">
+                    </div>
+                    <div class="content">
+                        <h2 class="title">Atanas Manolev</h2>
+                        <h6 class="subtitle theme-gradient">Developer</h6>
+                        <span class="team-form">
+                    <i class="feather-map-pin"></i>
+                    <span class="location">Sofia, Bulgaria</span>
+                </span>
+                        <span class="team-form">
+                    <i class="feather-mail"></i>
+                    <span>atanasmanolev86@gmail.com</span>
+                </span>
+                        <span>
+                    <i class="feather-linkedin"></i>
+                    <a href="https://www.linkedin.com/in/atanas-manolev-a67215251" target="_blank">atanas manolev</a>
+                </span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Second Team Member -->
+        <div class="col-md-4">
+            <div class="rbt-team team-style-default style-three rbt-hover">
+                <div class="inner">
+                    <div class="thumbnail"><img src="../static/assets/images/authors/viktor_picture.png"
+                                                th:src="@{/assets/images/authors/viktor_picture.png}"
+                                                alt="Corporate Template">
+                    </div>
+                    <div class="content">
+                        <h2 class="title">Viktor Mitrev</h2>
+                        <h6 class="subtitle theme-gradient">Developer</h6>
+                        <span class="team-form">
+                    <i class="feather-map-pin"></i>
+                    <span>Sofia, Bulgaria</span>
+                </span>
+                        <span class="team-form">
+                    <i class="feather-mail"></i>
+                    <span>viktorivmitrev@gmail.com</span>
+                </span>
+                        <span>
+                    <i class="feather-linkedin"></i>
+                    <a href="https://www.linkedin.com/in/vikmit7/" target="_blank">viktor mitrev</a>
+                </span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<div class="rbt-progress-parent">
-    <svg class="rbt-back-circle svg-inner" width="100%" height="100%" viewBox="-1 -1 102 102">
-        <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
-    </svg>
+    </div>
 </div>
 
 <!-- JS
 ============================================ -->
-<!-- Modernizer JS -->
 <script src="/static/js/vendor/modernizr.min.js" th:src="@{/js/vendor/modernizr.min.js}"></script>
 <script src="/static/js/vendor/jquery.js" th:src="@{/js/vendor/jquery.js}"></script>
 <script src="/static/js/vendor/bootstrap.min.js" th:src="@{/js/vendor/bootstrap.min.js}"></script>

@@ -39,7 +39,7 @@ public class LectureController {
         this.solutionService = solutionService;
     }
 
-    @GetMapping(value = "/{courseId}/lecture/{lectureId}")
+    @GetMapping("/{courseId}/lecture/{lectureId}")
     public Lecture get(@RequestHeader HttpHeaders headers,
                        @PathVariable(name = "courseId") @Positive(message = "Course ID must be a positive integer") int courseId,
                        @PathVariable(name = "lectureId") @Positive(message = "Lecture ID must be a positive integer") int lectureId) {
