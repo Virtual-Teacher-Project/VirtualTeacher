@@ -61,7 +61,7 @@ The following list of software should be installed on your computer:
 
 
 ## Database Schema
-![](src/main/resources/static/assets/images/db/database-schema.png)
+![](database-schema.png)
 
 
 
