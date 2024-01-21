@@ -151,36 +151,8 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
         return orderBy;
     }
 
-    //TODO refactor keywords in the query with capital letter pattern to follow consistency of the code
-    // TODO: 26.11.23 we should consider combining this method with getCoursesByUser. Removing the throw statement here
-    //  and adding a .isEmpty check in the service will most likely do the job. Discuss with team.
-//    @Override
-//    public List<Course> getUsersEnrolledCourses(int userId) {
-//
-//        ///TODO check if should return only ongoing courses
-//        String sql = "SELECT  courses.id,title,start_date,creator_id,email,first_name,last_name,picture_url,is_verified,is_published,passing_grade, topic, topic_id, AVG(ratings.rating) AS avg_rating " +
-//                " FROM course_user "+
-//                " LEFT JOIN courses ON course_user.course_id = courses.id "+
-//                " LEFT JOIN users ON course_user.user_id = users.id "+
-//                " LEFT JOIN topics ON courses.topic_id=topics.id "+
-//                " LEFT JOIN ratings ON courses.id = ratings.course_id "+
-//                " WHERE course_user.user_id = :id " +
-//                "GROUP BY courses.id";
-//
-//
-//
-//        MapSqlParameterSource in = new MapSqlParameterSource();
-//        in.addValue("id", userId);
-//        try {
-//            return namedParameterJdbcTemplate.query(sql, in, courseMapper);
-//        } catch (IncorrectResultSizeDataAccessException e) {
-//           // throw new EntityNotFoundException();
-//            return Collections.emptyList();
-//        }
-//    }
-
     @Override
-    public List<Course> getUsersCompletedCourses(int userId) {
+    public List<Course> getCompletedCoursesByUser(int userId) {
         String sql = "SELECT description, courses.id,title,start_date,creator_id,email,first_name,last_name,picture_url, " +
                 "is_verified,is_published,passing_grade, topic, topic_id, AVG(ratings.rating) AS avg_rating " +
                 "FROM course_user " +
@@ -240,7 +212,7 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
 
 
     @Override
-    public List<Course> getCoursesByUser(int userId) {
+    public List<Course> getOngoingCoursesByUser(int userId) {
         String sql = "SELECT description, courses.id, title, start_date, creator_id, email, first_name, last_name, picture_url,is_verified," +
                 " is_published, passing_grade, topic, topic_id, AVG(ratings.rating) AS avg_rating  " +
                 "FROM course_user " +
@@ -251,7 +223,6 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
                 " LEFT JOIN course_description on courses.id = course_description.course_id " +
                 "WHERE course_user.user_id = :id AND course_user.ongoing = 1 " +
                 "GROUP BY courses.id";
-// TODO: 3.12.23 this method should return all courses for the user, not only the ones he is enrolled for.
         MapSqlParameterSource in = new MapSqlParameterSource();
         in.addValue("id", userId);
 
@@ -311,13 +282,11 @@ public class CourseDaoImpl extends NamedParameterJdbcDaoSupport implements Cours
         in.addValue("is_published", course.isPublished());
         in.addValue("passing_grade", course.getPassingGrade());
         in.addValue("course_id", course.getCourseId());
-        if (namedParameterJdbcTemplate.update(sql, in) == 0) {
-            throw new EntityNotFoundException("Lecture", "id", course.getCourseId().toString());
-        }
+
+        namedParameterJdbcTemplate.update(sql, in);
 
         if (isDescriptionExist(course.getCourseId())) {
-            // TODO: 9.01.24 test if empty description (one or more intervals deletes the description /most likely not/) 
-            if (course.getDescription() == null) {
+            if (course.getDescription() == null || course.getDescription().getDescription().isBlank()) {
                 deleteDescription(in);
             } else {
                 in.addValue("description", course.getDescription().getDescription());

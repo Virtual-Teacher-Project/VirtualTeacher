@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
         String userRoleType = user.getRole().getRoleType();
         Set<Course> courseSet = new HashSet<>();
         if (userRoleType.equalsIgnoreCase("Student")) {
-            courseSet.addAll(courseDao.getCoursesByUser(id));
+            courseSet.addAll(courseDao.getOngoingCoursesByUser(id));
         }
         if (userRoleType.equalsIgnoreCase("Teacher") || userRoleType.equalsIgnoreCase("Admin")) {
             courseSet.addAll(courseDao.getCoursesByCreator(id));

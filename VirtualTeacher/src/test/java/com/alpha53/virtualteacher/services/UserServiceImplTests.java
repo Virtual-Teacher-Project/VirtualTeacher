@@ -23,9 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTests {
@@ -66,12 +64,12 @@ public class UserServiceImplTests {
         List<Course> mockCourses = new ArrayList<>(List.of(mockCourse));
 
         Mockito.when(userDao.get(mockUser.getUserId())).thenReturn(mockUser);
-        Mockito.when(courseDao.getCoursesByUser(mockUser.getUserId())).thenReturn(mockCourses);
+        Mockito.when(courseDao.getOngoingCoursesByUser(mockUser.getUserId())).thenReturn(mockCourses);
 
         userService.get(mockUser.getUserId());
 
         Mockito.verify(userDao, Mockito.times(1)).get(mockUser.getUserId());
-        Mockito.verify(courseDao, Mockito.times(1)).getCoursesByUser(mockUser.getUserId());
+        Mockito.verify(courseDao, Mockito.times(1)).getOngoingCoursesByUser(mockUser.getUserId());
     }
 
     @Test
@@ -81,7 +79,7 @@ public class UserServiceImplTests {
         List<Course> mockCourses = new ArrayList<>(List.of(mockCourse));
 
         Mockito.when(userDao.get(mockUser.getUserId())).thenReturn(mockUser);
-        Mockito.when(courseDao.getCoursesByUser(mockUser.getUserId())).thenReturn(mockCourses);
+        Mockito.when(courseDao.getOngoingCoursesByUser(mockUser.getUserId())).thenReturn(mockCourses);
 
         User user = userService.get(mockUser.getUserId());
 
@@ -103,7 +101,7 @@ public class UserServiceImplTests {
         User user = userService.get(mockUser.getUserId());
 
         Assertions.assertEquals(user.getCourses().size(), 1);
-        Mockito.verify(courseDao, Mockito.times(0)).getCoursesByUser(Mockito.anyInt());
+        Mockito.verify(courseDao, Mockito.times(0)).getOngoingCoursesByUser(Mockito.anyInt());
     }
 
     @Test
@@ -119,7 +117,7 @@ public class UserServiceImplTests {
         User user = userService.get(mockUser.getUserId());
 
         Assertions.assertEquals(user.getCourses().size(), 1);
-        Mockito.verify(courseDao, Mockito.times(0)).getCoursesByUser(Mockito.anyInt());
+        Mockito.verify(courseDao, Mockito.times(0)).getOngoingCoursesByUser(Mockito.anyInt());
     }
 
     @Test

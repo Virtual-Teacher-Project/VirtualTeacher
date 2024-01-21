@@ -13,7 +13,7 @@ public interface CourseDao {
     List<Course> get(FilterOptions filterOptions);
 
     // List<Course> getUsersEnrolledCourses(int userId);
-    List<Course> getUsersCompletedCourses(int userId);
+    List<Course> getCompletedCoursesByUser(int userId);
 
     List<User> getStudentsWhichAreEnrolledForCourse(int courseId);
 
@@ -21,7 +21,7 @@ public interface CourseDao {
 
     void completeCourse(int userId, int courseId);
 
-    List<Course> getCoursesByUser(int userId);
+    List<Course> getOngoingCoursesByUser(int userId);
 
     List<Course> getCoursesByCreator(int creatorId);
 
