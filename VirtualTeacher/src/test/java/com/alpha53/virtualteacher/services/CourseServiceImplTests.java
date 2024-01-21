@@ -275,20 +275,20 @@ public class CourseServiceImplTests {
     @Test
     public void getUsersEnrolledCourses_Should_CallDaoWhenValidInput(){
         Course mockCourse = Helpers.createMockCourse();
-        Mockito.when(courseDao.getCoursesByUser(Mockito.anyInt())).thenReturn(Arrays.asList(mockCourse, mockCourse, mockCourse));
+        Mockito.when(courseDao.getOngoingCoursesByUser(Mockito.anyInt())).thenReturn(Arrays.asList(mockCourse, mockCourse, mockCourse));
         courseService.getUsersEnrolledCourses(1);
 
-        Mockito.verify(courseDao, Mockito.times(1)).getCoursesByUser(Mockito.anyInt());
+        Mockito.verify(courseDao, Mockito.times(1)).getOngoingCoursesByUser(Mockito.anyInt());
     }
 
 
     @Test
     public void getUsersCompletedCourses_Should_CallDaoWhenValidInput(){
         Course mockCourse = Helpers.createMockCourse();
-        Mockito.when(courseDao.getUsersCompletedCourses(Mockito.anyInt())).thenReturn(Arrays.asList(mockCourse, mockCourse, mockCourse));
+        Mockito.when(courseDao.getCompletedCoursesByUser(Mockito.anyInt())).thenReturn(Arrays.asList(mockCourse, mockCourse, mockCourse));
         courseService.getUsersCompletedCourses(1);
 
-        Mockito.verify(courseDao, Mockito.times(1)).getUsersCompletedCourses(Mockito.anyInt());
+        Mockito.verify(courseDao, Mockito.times(1)).getCompletedCoursesByUser(Mockito.anyInt());
     }
 
 
@@ -321,7 +321,7 @@ public class CourseServiceImplTests {
         Course mockCourse = Helpers.createMockCourse();
 
         Mockito.when(courseDao.get(Mockito.anyInt())).thenReturn(mockCourse);
-        Mockito.when(courseDao.getCoursesByUser(Mockito.anyInt())).thenReturn(Arrays.asList(mockCourse, mockCourse, mockCourse));
+        Mockito.when(courseDao.getOngoingCoursesByUser(Mockito.anyInt())).thenReturn(Arrays.asList(mockCourse, mockCourse, mockCourse));
 
 
         Assertions.assertThrows(EntityDuplicateException.class, () -> courseService.enrollUserForCourse(mockUser, mockCourse.getCourseId()));
@@ -334,7 +334,7 @@ public class CourseServiceImplTests {
         mockCourse2.setCourseId(123);
 
         Mockito.when(courseDao.get(Mockito.anyInt())).thenReturn(mockCourse);
-        Mockito.when(courseDao.getCoursesByUser(Mockito.anyInt())).thenReturn(Arrays.asList(mockCourse2, mockCourse2, mockCourse2));
+        Mockito.when(courseDao.getOngoingCoursesByUser(Mockito.anyInt())).thenReturn(Arrays.asList(mockCourse2, mockCourse2, mockCourse2));
 
 
         Assertions.assertThrows(AuthorizationException.class, () -> courseService.enrollUserForCourse(mockUser, mockCourse.getCourseId()));
@@ -348,7 +348,7 @@ public class CourseServiceImplTests {
         mockCourse2.setCourseId(123);
 
         Mockito.when(courseDao.get(Mockito.anyInt())).thenReturn(mockCourse);
-        Mockito.when(courseDao.getCoursesByUser(Mockito.anyInt())).thenReturn(Arrays.asList(mockCourse2, mockCourse2, mockCourse2));
+        Mockito.when(courseDao.getOngoingCoursesByUser(Mockito.anyInt())).thenReturn(Arrays.asList(mockCourse2, mockCourse2, mockCourse2));
 
 
         Assertions.assertThrows(AuthorizationException.class, () -> courseService.enrollUserForCourse(mockUser, mockCourse.getCourseId()));
@@ -362,7 +362,7 @@ public class CourseServiceImplTests {
         mockCourse2.setCourseId(123);
 
         Mockito.when(courseDao.get(Mockito.anyInt())).thenReturn(mockCourse);
-        Mockito.when(courseDao.getCoursesByUser(Mockito.anyInt())).thenReturn(Arrays.asList(mockCourse2, mockCourse2, mockCourse2));
+        Mockito.when(courseDao.getOngoingCoursesByUser(Mockito.anyInt())).thenReturn(Arrays.asList(mockCourse2, mockCourse2, mockCourse2));
 
 
         Assertions.assertThrows(AuthorizationException.class, () -> courseService.enrollUserForCourse(mockUser, mockCourse.getCourseId()));
@@ -379,7 +379,7 @@ public class CourseServiceImplTests {
         mockCourse2.setCourseId(123);
 
         Mockito.when(courseDao.get(Mockito.anyInt())).thenReturn(mockCourse);
-        Mockito.when(courseDao.getCoursesByUser(Mockito.anyInt())).thenReturn(Arrays.asList(mockCourse2, mockCourse2, mockCourse2));
+        Mockito.when(courseDao.getOngoingCoursesByUser(Mockito.anyInt())).thenReturn(Arrays.asList(mockCourse2, mockCourse2, mockCourse2));
         courseService.enrollUserForCourse(mockUser, mockCourse.getCourseId());
 
         Mockito.verify(courseDao, Mockito.times(1)).enrollUserForCourse(Mockito.anyInt(), Mockito.anyInt());

@@ -125,12 +125,12 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Course> getUsersEnrolledCourses(int userId) {
-        return courseRepository.getCoursesByUser(userId);
+        return courseRepository.getOngoingCoursesByUser(userId);
     }
 
     @Override
     public List<Course> getUsersCompletedCourses(int userId) {
-        return courseRepository.getUsersCompletedCourses(userId);
+        return courseRepository.getCompletedCoursesByUser(userId);
     }
 
     public void transferTeacherCourses(int teacherToTransferFromId, int teacherToTransferToId, User loggedUser) {
@@ -153,7 +153,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void enrollUserForCourse(User user, int courseId) {
-        List<Course> enrolledCourses = courseRepository.getCoursesByUser(user.getUserId());
+        List<Course> enrolledCourses = courseRepository.getOngoingCoursesByUser(user.getUserId());
         Course course = courseRepository.get(courseId);
 
         if (containsId(enrolledCourses, courseId)) {

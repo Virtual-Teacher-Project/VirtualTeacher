@@ -1,7 +1,6 @@
 package com.alpha53.virtualteacher.services;
 
 import com.alpha53.virtualteacher.exceptions.AuthorizationException;
-import com.alpha53.virtualteacher.exceptions.EntityDuplicateException;
 import com.alpha53.virtualteacher.exceptions.EntityNotFoundException;
 import com.alpha53.virtualteacher.models.*;
 import com.alpha53.virtualteacher.repositories.contracts.CourseDao;
@@ -10,7 +9,6 @@ import com.alpha53.virtualteacher.repositories.contracts.SolutionDao;
 import com.alpha53.virtualteacher.repositories.contracts.UserDao;
 import com.alpha53.virtualteacher.services.contracts.ConfirmationTokenService;
 import com.alpha53.virtualteacher.services.contracts.EmailService;
-import com.alpha53.virtualteacher.services.contracts.LectureService;
 import com.alpha53.virtualteacher.services.contracts.StorageService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,13 +17,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.text.html.Option;
-import java.io.IOException;
-import java.time.LocalDate;
 import java.util.*;
 
 import static org.mockito.Mockito.mock;
@@ -153,7 +147,7 @@ public class LectureServiceImplTests {
         List<Course> listOfCourses = new ArrayList<>();
         listOfCourses.add(mockCourse);
         listOfCourses.add(mockCourse);
-        Mockito.when(courseDao.getCoursesByUser(Mockito.anyInt())).thenReturn(listOfCourses);
+        Mockito.when(courseDao.getOngoingCoursesByUser(Mockito.anyInt())).thenReturn(listOfCourses);
         //Mockito.when(courseDao.isUserEnrolled(Mockito.anyInt(), Mockito.anyInt())).thenReturn(Boolean.TRUE);
 
         lectureService.getAllByCourseId(mockCourse.getCourseId(),mockUser);
@@ -175,7 +169,7 @@ public class LectureServiceImplTests {
         Mockito.when(courseDao.get(Mockito.anyInt())).thenReturn(mockCourse);
         List<Course> listOfCourses = new ArrayList<>();
 
-        Mockito.when(courseDao.getCoursesByUser(Mockito.anyInt())).thenReturn(listOfCourses);
+        Mockito.when(courseDao.getOngoingCoursesByUser(Mockito.anyInt())).thenReturn(listOfCourses);
         //Mockito.when(courseDao.isUserEnrolled(Mockito.anyInt(), Mockito.anyInt())).thenReturn(Boolean.TRUE);
 
         lectureService.getAllByCourseId(mockCourse.getCourseId(),mockUser);
